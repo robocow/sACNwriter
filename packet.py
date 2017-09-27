@@ -55,7 +55,7 @@ class DMPLayer(LayerBase):
 class FramingLayer(LayerBase):
     def __init__(self, dmp_packet=None, universe=1, name=None, priority=100, sequence=0):
         self.universe = universe
-        name = name or 'lumos'
+        name = name or 'MK'
         self.name = name
         self.priority = priority
         self.sequence = sequence
