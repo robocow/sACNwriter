@@ -36,7 +36,7 @@ sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
 # Set a timeout so the socket does not block indefinitely when trying
 # to receive data.
-sock.settimeout(0.2)
+sock.settimeout(0.5)
 
 # sent = sock.sendto(p.packet, (UDP_IP, UDP_PORT))
 src = DMXSource()
@@ -49,11 +49,13 @@ with io.open('test.csv', 'r') as f:
     for row in listdata:
         outputList.append(map(int, row))
 
+    print "Number of frames " + str(len(listdata))
 
+print "Starting Loop"
 # write data out to network in loop
 while 1 == 1:
 
     for row in outputList:
             src.send_data(row)
-            time.sleep(0.08)
+            time.sleep(0.05)
 
