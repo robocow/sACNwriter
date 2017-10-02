@@ -17,6 +17,7 @@ try:
     universe_number = int(sys.argv[2])
 except ValueError:
     print "Universe number not correct"
+    exit(1)
 
 #use lumen lib to send sACN packets
 
