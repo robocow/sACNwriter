@@ -1,57 +1,45 @@
 # sACN playback
+# takes in csv list of dmx values to playback over sACN / E1.31 in a loop
 
-# takes in csv list of values to playback over dmx
-
-import math
-
-from packet import E131Packet
 from source import DMXSource
-
-data = [255] * 512
-
-p = E131Packet(universe=1, data=data)
-
-
-import socket
-import struct
+import sys
 import csv
 import time
 import io
 
+#use argv to get command line arguments
 
-# 239.256.0.1:5568
-UDP_IP = "239.255.0.1"
+if len(sys.argv) != 3:
+    print "number of arguments found " + str(len(sys.argv))
+    print "Please specify CSV file to play and the universe e.g. 'python CSVPlay.py test.csv 1'"
+    exit(1)
+try:
+    universe_number = int(sys.argv[2])
+except ValueError:
+    print "Universe number not correct"
 
-UDP_PORT = 5568
-multicast_group = ("239.255.0.1", 5568)
+#use lumen lib to send sACN packets
 
-sock = socket.socket(socket.AF_INET, # Internet
-                      socket.SOCK_DGRAM) # UDP
-
-# Set the time-to-live for messages to 1 so they do not go past the
-# local network segment.
-ttl = struct.pack('b', 1)
-
-sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
-
-# Set a timeout so the socket does not block indefinitely when trying
-# to receive data.
-sock.settimeout(0.5)
-
-# sent = sock.sendto(p.packet, (UDP_IP, UDP_PORT))
 src = DMXSource()
+src.universe = universe_number
 outputList = []
+
 # Open file with dmx data
-with io.open('test.csv', 'r') as f:
-    reader = csv.reader(f)
-    listdata = list(reader)
+try:
+    with io.open(sys.argv[1], 'r') as f:
+        reader = csv.reader(f)
+        listdata = list(reader)
+except OSError as e:
+    print("File open failed")
+    exit(1)
 
-    for row in listdata:
-        outputList.append(map(int, row))
+for row in listdata:
+    outputList.append(map(int, row))    #convert type to int.
 
-    print "Number of frames " + str(len(listdata))
+print "Number of frames " + str(len(listdata)) #check on frames read in - useful to see it rad correctly
+print "Break to exit - Ctrl-C"
+print "Starting Main Loop..."
 
-print "Starting Loop"
 # write data out to network in loop
 while 1 == 1:
 
